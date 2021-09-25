@@ -31,63 +31,76 @@ fetch(
       }
     }
     for (let i = 0; i < data.length; i++) {
-        for(const key in dict){
-            let encontrado =false;
-            for (let j = 0; j < data[i].events.length; j++) {
-                if(key == data[i].events[j]){
-                    encontrado= true;
-                    if(data[i].squirrel == true){
-                        dict[key]["TP"] = dict[key]["TP"] + 1;
-                    }
-                    else{
-                        dict[key]["FN"] = dict[key]["FN"] + 1;
-                    }
-                }
+      for (const key in dict) {
+        let encontrado = false;
+        for (let j = 0; j < data[i].events.length; j++) {
+          if (key == data[i].events[j]) {
+            encontrado = true;
+            if (data[i].squirrel == true) {
+              dict[key]["TP"] = dict[key]["TP"] + 1;
+            } else {
+              dict[key]["FN"] = dict[key]["FN"] + 1;
             }
-            if(encontrado==false){
-                if(data[i].squirrel == true){
-                    dict[key]["FP"] = dict[key]["FP"] + 1;
-                }
-                else{
-                    dict[key]["TN"] = dict[key]["TN"] + 1;
-                }  
-            }
+          }
         }
+        if (encontrado == false) {
+          if (data[i].squirrel == true) {
+            dict[key]["FP"] = dict[key]["FP"] + 1;
+          } else {
+            dict[key]["TN"] = dict[key]["TN"] + 1;
+          }
+        }
+      }
     }
     console.log(dict);
 
-    for(let i = 0; i < Object.keys(dict).length; i++){
-        let newRow = tbodyRef2.insertRow(i);
-        let cel1 = newRow.insertCell(0);
-        let cel2 = newRow.insertCell(1);
-        let cel3 = newRow.insertCell(2);
-        let eventActual=Object.keys(dict)[i]
-        cel1.innerHTML = i + 1;
-        cel2.innerHTML = eventActual;
-        let arriba = (dict[eventActual]["TP"]*dict[eventActual]["TN"])-(dict[eventActual]["FP"]*dict[eventActual]["FN"]);
-        let abajo = Math.sqrt((dict[eventActual]["TP"]+dict[eventActual]["FP"])*(dict[eventActual]["TP"]+dict[eventActual]["FN"])*(dict[eventActual]["TN"]+dict[eventActual]["FP"])*(dict[eventActual]["TN"]+dict[eventActual]["FN"]));
-        let mcc = arriba/abajo;
-        console.log(mcc);
-        cel3.innerHTML = mcc;
-    }
-    /*
     for (let i = 0; i < Object.keys(dict).length; i++) {
-        let newRow = tbodyRef2.insertRow(i);
-        let cel1 = newRow.insertCell(0);
-        let cel2 = newRow.insertCell(1);
-        let cel3 = newRow.insertCell(2);
-        let eventActual=Object.keys(dict)[i]
-        cel1.innerHTML = i + 1;
-        cel2.innerHTML = eventActual;
-    console.log(eventActual)
-    let arriba = (dict[eventActual]["TP"]*dict[eventActual]["TN"])-(dict[eventActual]["FP"]*dict[eventActual]["FN"]);
-    let abajo = Math.sqrt((dict[eventActual]["TP"]+dict[eventActual]["FP"])*(dict[eventActual]["TP"]+dict[eventActual]["FN"])*(dict[eventActual]["TN"]+dict[eventActual]["FP"])*(dict[eventActual]["TN"]+dict[eventActual]["FN"]));
-    //console.log("arriba " + eventActual +"es :"+arriba)
-    //console.log("abajo " + eventActual +"es :"+abajo)
-    let  valor =  dict[eventActual]['FN'];
-    
+      let newRow = tbodyRef2.insertRow(i);
+      let cel1 = newRow.insertCell(0);
+      let cel2 = newRow.insertCell(1);
+      let cel3 = newRow.insertCell(2);
+      let eventActual = Object.keys(dict)[i];
+      cel2.innerHTML = eventActual;
+      let arriba =
+        dict[eventActual]["TP"] * dict[eventActual]["TN"] -
+        dict[eventActual]["FP"] * dict[eventActual]["FN"];
+      let abajo = Math.sqrt(
+        (dict[eventActual]["TP"] + dict[eventActual]["FP"]) *
+          (dict[eventActual]["TP"] + dict[eventActual]["FN"]) *
+          (dict[eventActual]["TN"] + dict[eventActual]["FP"]) *
+          (dict[eventActual]["TN"] + dict[eventActual]["FN"])
+      );
+      let mcc = arriba / abajo;
+      console.log(mcc);
+      cel3.innerHTML = mcc;
+      cel1.innerHTML = i + 1;
+      if (i == Object.keys(dict).length - 1) {
+        sortTableByColumn(document.querySelector("table2"), 2, false);
+      }
     }
-    console.log(valor);
-   console.log(dict);
-   */
+    function sortTableByColumn(table, column, asc = true) {
+      const dirModifier = asc ? 1 : -1;
+      const tBody = document.getElementById("contenidoT2");
+      const rows = Array.from(tBody.querySelectorAll("tr"));
+
+      const sortedRows = rows.sort((a, b) => {
+        const aColText = a
+          .querySelector(`td:nth-child(${column + 1})`)
+          .textContent.trim();
+        const bColText = b
+          .querySelector(`td:nth-child(${column + 1})`)
+          .textContent.trim();
+
+        return aColText > bColText ? 1 * dirModifier : -1 * dirModifier;
+      });
+
+      while (tBody.firstChild) {
+        tBody.removeChild(tBody.firstChild);
+      }
+      tBody.append(...sortedRows);
+    }
+    for (let i = 0; i < Object.keys(dict).length; i++) {
+    let tBody = document.getElementById("contenidoT2");
+    tBody.rows[i].cells[0].innerHTML = i+1;
+    }
   });
